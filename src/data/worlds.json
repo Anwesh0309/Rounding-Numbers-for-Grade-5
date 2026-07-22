@@ -1,0 +1,92 @@
+[
+  {
+    "id": "marble-meadow",
+    "name": "Marble Meadow",
+    "icon": "🟢",
+    "skill": "Nearest 10",
+    "rangeText": "Q1 - Q10",
+    "color": "from-emerald-500 to-teal-700",
+    "borderColor": "border-emerald-400"
+  },
+  {
+    "id": "sticker-studio",
+    "name": "Sticker Studio",
+    "icon": "🎨",
+    "skill": "Nearest 100",
+    "rangeText": "Q11 - Q20",
+    "color": "from-purple-500 to-pink-600",
+    "borderColor": "border-pink-400"
+  },
+  {
+    "id": "star-harbor",
+    "name": "Star Harbor",
+    "icon": "⭐",
+    "skill": "Nearest 1,000",
+    "rangeText": "Q21 - Q30",
+    "color": "from-amber-400 to-amber-600",
+    "borderColor": "border-amber-400"
+  },
+  {
+    "id": "cloud-kingdom",
+    "name": "Cloud Kingdom",
+    "icon": "☁️",
+    "skill": "Nearest 10,000",
+    "rangeText": "Q31 - Q40",
+    "color": "from-cyan-400 to-blue-600",
+    "borderColor": "border-cyan-300"
+  },
+  {
+    "id": "galaxy-grove",
+    "name": "Galaxy Grove",
+    "icon": "🌌",
+    "skill": "Nearest 100,000",
+    "rangeText": "Q41 - Q50",
+    "color": "from-indigo-500 to-purple-800",
+    "borderColor": "border-indigo-400"
+  },
+  {
+    "id": "estimation-bay",
+    "name": "Estimation Bay",
+    "icon": "⛵",
+    "skill": "Sums & Differences",
+    "rangeText": "Q51 - Q60",
+    "color": "from-sky-400 to-indigo-600",
+    "borderColor": "border-sky-300"
+  },
+  {
+    "id": "product-peaks",
+    "name": "Product Peaks",
+    "icon": "🏔️",
+    "skill": "Product Estimation",
+    "rangeText": "Q61 - Q70",
+    "color": "from-rose-500 to-red-700",
+    "borderColor": "border-rose-400"
+  },
+  {
+    "id": "division-docks",
+    "name": "Division Docks",
+    "icon": "⚓",
+    "skill": "Quotient Estimation",
+    "rangeText": "Q71 - Q80",
+    "color": "from-teal-400 to-emerald-700",
+    "borderColor": "border-teal-300"
+  },
+  {
+    "id": "word-problem-woods",
+    "name": "Word Problem Woods",
+    "icon": "🌲",
+    "skill": "Real-World Scenarios",
+    "rangeText": "Q81 - Q90",
+    "color": "from-green-500 to-emerald-800",
+    "borderColor": "border-green-400"
+  },
+  {
+    "id": "mastery-mountain",
+    "name": "Mastery Mountain",
+    "icon": "🏆",
+    "skill": "Grand Mixed Challenge",
+    "rangeText": "Q91 - Q100",
+    "color": "from-yellow-400 to-amber-600",
+    "borderColor": "border-yellow-300"
+  }
+]
