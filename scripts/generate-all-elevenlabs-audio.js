@@ -15,6 +15,50 @@ if (!fs.existsSync(outputDir)) {
 const API_KEY = 'sk_7ef27dccb32144843f8ee5068dfd4223a85326c56c14b00a';
 const VOICE_ID = 'Xb7hH8MSUJpSbSDYk0k2';
 
+function numberToWords(num) {
+  if (num === 0) return 'zero';
+  const ones = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 
+                'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+  function convertChunk(n) {
+    let str = '';
+    if (n >= 100) {
+      str += ones[Math.floor(n / 100)] + ' hundred ';
+      n %= 100;
+    }
+    if (n >= 20) {
+      str += tens[Math.floor(n / 10)] + (n % 10 !== 0 ? '-' + ones[n % 10] : '') + ' ';
+    } else if (n > 0) {
+      str += ones[n] + ' ';
+    }
+    return str.trim();
+  }
+
+  if (num >= 1000000) {
+    const millions = Math.floor(num / 1000000);
+    const remainder = num % 1000000;
+    return (convertChunk(millions) + ' million ' + (remainder ? numberToWords(remainder) : '')).trim();
+  }
+  if (num >= 1000) {
+    const thousands = Math.floor(num / 1000);
+    const remainder = num % 1000;
+    return (convertChunk(thousands) + ' thousand ' + (remainder ? convertChunk(remainder) : '')).trim();
+  }
+  return convertChunk(num);
+}
+
+function normalizeTextForTTS(text) {
+  if (!text) return '';
+  return text.replace(/\b\d{1,3}(,\d{3})+\b|\b\d+\b/g, (match) => {
+    const n = parseInt(match.replace(/,/g, ''), 10);
+    if (!isNaN(n)) {
+      return numberToWords(n);
+    }
+    return match;
+  });
+}
+
 // 1. Static Phase items
 const staticItems = [
   {
@@ -79,10 +123,8 @@ const allItems = [...staticItems, ...playItems];
 async function generateSingle(item) {
   const filePath = path.join(outputDir, item.filename);
 
-  // Skip if already exists and is non-empty (> 2KB)
-  if (fs.existsSync(filePath) && fs.statSync(filePath).size > 2000) {
-    return true;
-  }
+  // Normalize numbers to spelled-out English words for perfect pronunciation
+  const phoneticText = normalizeTextForTTS(item.text);
 
   // Try ElevenLabs API
   try {
@@ -93,11 +135,13 @@ async function generateSingle(item) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        text: item.text,
+        text: phoneticText,
         model_id: 'eleven_multilingual_v2',
         voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.75
+          stability: 0.75,
+          similarity_boost: 0.85,
+          style: 0.0,
+          use_speaker_boost: true
         }
       })
     });
@@ -105,7 +149,7 @@ async function generateSingle(item) {
     if (res.ok) {
       const buffer = await res.arrayBuffer();
       fs.writeFileSync(filePath, Buffer.from(buffer));
-      console.log(`[ElevenLabs OK] ${item.filename} (${buffer.byteLength} bytes)`);
+      console.log(`[ElevenLabs Perfect Pronunciation OK] ${item.filename} (${buffer.byteLength} bytes)`);
       return true;
     } else {
       const errText = await res.text().catch(() => '');
@@ -117,7 +161,7 @@ async function generateSingle(item) {
 
   // Fallback to Google TTS if ElevenLabs rate limits
   try {
-    const fallbackUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(item.text)}`;
+    const fallbackUrl = `https://translate.google.com/translate_tts?ie=UTF-8&tl=en&client=tw-ob&q=${encodeURIComponent(phoneticText)}`;
     const res = await fetch(fallbackUrl, { headers: { 'User-Agent': 'Mozilla/5.0' } });
     if (res.ok) {
       const buffer = await res.arrayBuffer();
@@ -133,7 +177,7 @@ async function generateSingle(item) {
 }
 
 async function run() {
-  console.log(`Starting ElevenLabs audio generation for ${allItems.length} files...`);
+  console.log(`Starting Perfect-Pronunciation Audio Generation for ${allItems.length} files...`);
   let successCount = 0;
 
   for (let i = 0; i < allItems.length; i++) {
@@ -141,11 +185,11 @@ async function run() {
     const success = await generateSingle(item);
     if (success) successCount++;
 
-    // Small delay to prevent rate limits
+    // 200ms delay for rate limits
     await new Promise(r => setTimeout(r, 200));
 
     if ((i + 1) % 10 === 0) {
-      console.log(`Progress: ${i + 1} / ${allItems.length} audio files processed.`);
+      console.log(`Progress: ${i + 1} / ${allItems.length} audio files re-generated.`);
     }
   }
 
