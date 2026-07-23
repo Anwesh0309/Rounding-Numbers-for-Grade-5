@@ -18,25 +18,30 @@ export default function PhaseTracker() {
     navigateToPhase, 
     isAudioMuted, 
     toggleAudio,
+    showIntroModal,
     setShowIntroModal
   } = useJourney();
 
+  if (showIntroModal) {
+    return null;
+  }
+
   return (
-    <header className="w-full flex items-center justify-between px-4 py-3 bg-[#130b2c]/80 backdrop-blur-md border-b border-white/10 shrink-0 z-40">
+    <header className="w-full flex items-center justify-between px-4 py-3 bg-transparent border-b-0 border-transparent shadow-none shrink-0 z-40 transition-all">
       {/* Home / Intro Button */}
       <button
         onClick={() => {
           setShowIntroModal(true);
           navigateToPhase('wonder');
         }}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/15 shadow-sm"
+        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-all border border-white/15 shadow-sm cursor-pointer"
       >
         <Home className="w-4 h-4 text-amber-400" />
         <span>Home</span>
       </button>
 
       {/* 5-Phase Sequence Tracker */}
-      <nav className="flex items-center gap-1.5 sm:gap-3 bg-[#1e1242] px-3 py-1.5 rounded-full border border-white/10 shadow-inner">
+      <nav className="flex items-center gap-1.5 sm:gap-3 bg-transparent px-3 py-1.5 rounded-full border-0">
         {STAGES.map((stage, idx) => {
           const isActive = currentPhase === stage.id;
           const isCompleted = completedPhases.includes(stage.id);
@@ -47,7 +52,7 @@ export default function PhaseTracker() {
               <button
                 disabled={!isUnlocked}
                 onClick={() => navigateToPhase(stage.id)}
-                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all duration-200 ${
+                className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold transition-all duration-200 cursor-pointer ${
                   isActive
                     ? 'bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 shadow-md scale-105 ring-2 ring-amber-300/50'
                     : isCompleted
@@ -83,7 +88,7 @@ export default function PhaseTracker() {
       {/* Audio Mute/Unmute Control */}
       <button
         onClick={toggleAudio}
-        className={`p-2 rounded-full border transition-all ${
+        className={`p-2 rounded-full border transition-all cursor-pointer ${
           isAudioMuted
             ? 'bg-red-500/20 text-red-400 border-red-500/30 hover:bg-red-500/30'
             : 'bg-amber-400/20 text-amber-300 border-amber-400/40 hover:bg-amber-400/30'
@@ -95,3 +100,4 @@ export default function PhaseTracker() {
     </header>
   );
 }
+

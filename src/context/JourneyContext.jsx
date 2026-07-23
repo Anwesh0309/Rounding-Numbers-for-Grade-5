@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { setMuted, getMuted } from '../utils/audio';
+import { setMuted, getMuted, stopNarration } from '../utils/audio';
 
 const JourneyContext = createContext();
 
@@ -23,20 +23,20 @@ export function JourneyProvider({ children }) {
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [showIntroModal, setShowIntroModal] = useState(true);
 
-  // Load state from localStorage on mount
+  // Load state from localStorage on mount safely
   useEffect(() => {
     try {
       const saved = localStorage.getItem('roundorama_progress_v1');
       if (saved) {
         const data = JSON.parse(saved);
-        if (data.completedPhases) setCompletedPhases(data.completedPhases);
-        if (data.unlockedPhases) setUnlockedPhases(data.unlockedPhases);
-        if (data.xp) setXp(data.xp);
-        if (data.starsByWorld) setStarsByWorld(data.starsByWorld);
-        if (data.unlockedWorlds) setUnlockedWorlds(data.unlockedWorlds);
+        if (Array.isArray(data.completedPhases)) setCompletedPhases(data.completedPhases);
+        if (Array.isArray(data.unlockedPhases) && data.unlockedPhases.length > 0) setUnlockedPhases(data.unlockedPhases);
+        if (data.xp !== undefined) setXp(data.xp);
+        if (data.starsByWorld && typeof data.starsByWorld === 'object') setStarsByWorld(data.starsByWorld);
+        if (Array.isArray(data.unlockedWorlds) && data.unlockedWorlds.length > 0) setUnlockedWorlds(data.unlockedWorlds);
         if (data.studentName) setStudentName(data.studentName);
-        if (data.overallScore) setOverallScore(data.overallScore);
-        if (data.totalQuestionsAttempted) setTotalQuestionsAttempted(data.totalQuestionsAttempted);
+        if (data.overallScore !== undefined) setOverallScore(data.overallScore);
+        if (data.totalQuestionsAttempted !== undefined) setTotalQuestionsAttempted(data.totalQuestionsAttempted);
       }
     } catch (e) {
       console.warn('Failed to load saved progress', e);
@@ -68,25 +68,45 @@ export function JourneyProvider({ children }) {
   };
 
   const completePhase = (phase) => {
-    if (!completedPhases.includes(phase)) {
-      const newCompleted = [...completedPhases, phase];
-      setCompletedPhases(newCompleted);
+    setCompletedPhases(prev => {
+      if (!prev.includes(phase)) return [...prev, phase];
+      return prev;
+    });
 
-      // Unlock next phase in sequence
-      const currentIndex = PHASE_SEQUENCE.indexOf(phase);
-      if (currentIndex !== -1 && currentIndex < PHASE_SEQUENCE.length - 1) {
-        const nextPhase = PHASE_SEQUENCE[currentIndex + 1];
-        if (!unlockedPhases.includes(nextPhase)) {
-          setUnlockedPhases(prev => [...prev, nextPhase]);
-        }
-      }
+    const currentIndex = PHASE_SEQUENCE.indexOf(phase);
+    if (currentIndex !== -1 && currentIndex < PHASE_SEQUENCE.length - 1) {
+      const nextPhase = PHASE_SEQUENCE[currentIndex + 1];
+      setUnlockedPhases(prev => {
+        if (!prev.includes(nextPhase)) return [...prev, nextPhase];
+        return prev;
+      });
+    }
+  };
+
+  const completePhaseAndNavigate = (phase, targetPhase) => {
+    stopNarration();
+    setCompletedPhases(prev => {
+      if (!prev.includes(phase)) return [...prev, phase];
+      return prev;
+    });
+
+    const nextToUnlock = targetPhase || PHASE_SEQUENCE[PHASE_SEQUENCE.indexOf(phase) + 1];
+    if (nextToUnlock) {
+      setUnlockedPhases(prev => {
+        if (!prev.includes(nextToUnlock)) return [...prev, nextToUnlock];
+        return prev;
+      });
+      setCurrentPhase(nextToUnlock);
     }
   };
 
   const navigateToPhase = (phase) => {
-    if (unlockedPhases.includes(phase)) {
-      setCurrentPhase(phase);
-    }
+    stopNarration();
+    setUnlockedPhases(prev => {
+      if (!prev.includes(phase)) return [...prev, phase];
+      return prev;
+    });
+    setCurrentPhase(phase);
   };
 
   const recordAnswer = (isCorrect, worldId, questionXp = 10) => {
@@ -148,6 +168,7 @@ export function JourneyProvider({ children }) {
       completedPhases,
       unlockedPhases,
       completePhase,
+      completePhaseAndNavigate,
       navigateToPhase,
       hearts,
       setHearts,

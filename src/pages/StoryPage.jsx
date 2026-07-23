@@ -2,17 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { useJourney } from '../context/JourneyContext';
 import { speakText } from '../utils/audio';
 import storiesData from '../data/stories.json';
-import { ArrowLeft, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Volume2 } from 'lucide-react';
 
 export default function StoryPage() {
-  const { completePhase, navigateToPhase, isAudioMuted } = useJourney();
+  const { completePhase, completePhaseAndNavigate, navigateToPhase, isAudioMuted } = useJourney();
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const currentSlide = storiesData[currentSlideIndex];
 
+  const handlePlayNarration = () => {
+    if (currentSlide) {
+      const hint = `story-${currentSlideIndex + 1}`;
+      speakText(`${currentSlide.title}. ${currentSlide.text} ${currentSlide.keyQuestion}`, hint);
+    }
+  };
+
   useEffect(() => {
     if (!isAudioMuted && currentSlide) {
-      speakText(`${currentSlide.title}. ${currentSlide.text} ${currentSlide.keyQuestion}`);
+      handlePlayNarration();
     }
   }, [currentSlideIndex, isAudioMuted]);
 
@@ -21,8 +28,7 @@ export default function StoryPage() {
       setCurrentSlideIndex(prev => prev + 1);
     } else {
       // Completed all story slides
-      completePhase('story');
-      navigateToPhase('simulate');
+      completePhaseAndNavigate('story', 'simulate');
     }
   };
 
@@ -49,7 +55,7 @@ export default function StoryPage() {
       </div>
 
       {/* Main Story Card Frame */}
-      <div className="w-full flex-1 glass-panel rounded-3xl p-4 sm:p-6 border border-white/20 shadow-2xl flex flex-col md:flex-row gap-4 sm:gap-6 items-center justify-center min-h-0 overflow-hidden">
+      <div className="w-full flex-1 glass-panel rounded-3xl p-4 sm:p-6 border border-white/20 shadow-2xl flex flex-col md:flex-row gap-4 sm:gap-6 items-center justify-center min-h-0 overflow-hidden relative">
         
         {/* Left Side: Story Illustration */}
         <div className="w-full md:w-1/2 h-44 sm:h-56 md:h-full rounded-2xl overflow-hidden border border-white/15 relative bg-slate-900/60 shrink-0 shadow-lg">
@@ -71,6 +77,7 @@ export default function StoryPage() {
             <h2 className="text-xl sm:text-2xl font-black text-amber-400 mb-2">
               {currentSlide.title}
             </h2>
+
             <p className="text-sm sm:text-base text-slate-100 leading-relaxed mb-4">
               {currentSlide.text}
             </p>

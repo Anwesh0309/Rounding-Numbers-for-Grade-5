@@ -3,7 +3,7 @@ import { useJourney } from '../context/JourneyContext';
 import { speakText } from '../utils/audio';
 import confetti from 'canvas-confetti';
 import worldsData from '../data/worlds.json';
-import { Trophy, Star, Award, Printer, RefreshCw, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Trophy, Star, Award, Printer, RefreshCw, Sparkles, CheckCircle2, Volume2 } from 'lucide-react';
 
 export default function ReflectPage() {
   const { 
@@ -19,6 +19,10 @@ export default function ReflectPage() {
 
   const [activeView, setActiveView] = useState('scoreboard'); // 'scoreboard' | 'certificate'
 
+  const handlePlayReflectNarration = () => {
+    speakText(`Congratulations ${studentName}! You have completed the Round-O-Rama learning journey! Check your scoreboard and print your certificate of mastery.`, 'reflect');
+  };
+
   useEffect(() => {
     completePhase('reflect');
     // Launch celebration confetti
@@ -33,7 +37,7 @@ export default function ReflectPage() {
     }
 
     if (!isAudioMuted) {
-      speakText(`Congratulations ${studentName}! You have completed the Round-O-Rama learning journey! Check your scoreboard and print your certificate of mastery.`);
+      handlePlayReflectNarration();
     }
   }, []);
 
@@ -66,7 +70,7 @@ export default function ReflectPage() {
 
         <button
           onClick={() => setActiveView('certificate')}
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black transition-all ${
+          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-black transition-all cursor-pointer ${
             activeView === 'certificate'
               ? 'bg-amber-400 text-slate-950 shadow-md scale-105 ring-2 ring-amber-300/50'
               : 'bg-white/10 text-white/70 hover:bg-white/20'
