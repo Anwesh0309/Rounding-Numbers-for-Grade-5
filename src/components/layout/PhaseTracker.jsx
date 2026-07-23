@@ -6,7 +6,7 @@ const STAGES = [
   { id: 'wonder', num: '01', label: 'Wonder', icon: '🧠' },
   { id: 'story', num: '02', label: 'Story', icon: '📖' },
   { id: 'simulate', num: '03', label: 'Simulate', icon: '🧪' },
-  { id: 'play', num: '04', label: 'Play', icon: '🎮' },
+  { id: 'play', num: '04', label: 'Practice', icon: '🎮' },
   { id: 'reflect', num: '05', label: 'Reflect', icon: '📜' },
 ];
 

@@ -140,13 +140,13 @@ export default function WonderPage() {
               {/* Row 2: Play, Reflect */}
               <div className="flex items-center justify-center gap-3 sm:gap-4">
                 
-                {/* Play */}
+                {/* Practice */}
                 <div className="flex items-center gap-2 text-left">
                   <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 flex items-center justify-center text-xs shrink-0 shadow">
                     🎮
                   </div>
                   <div>
-                    <div className="font-black text-white text-xs leading-none mb-0.5">Play</div>
+                    <div className="font-black text-white text-xs leading-none mb-0.5">Practice</div>
                     <div className="text-[9px] text-slate-300 opacity-80 leading-none">100 challenges</div>
                   </div>
                 </div>

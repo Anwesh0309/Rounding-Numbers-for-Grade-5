@@ -202,14 +202,14 @@ export default function SimulatePage() {
         title: "Correct! 🎉",
         message: explanation
       });
-      if (!isAudioMuted) speakText(`Correct! ${explanation}`);
+      if (!isAudioMuted) speakText("That's Right!", 'popup-correct.mp3');
     } else {
       setPopup({
         isCorrect: false,
         title: "Not quite!",
         message: explanation
       });
-      if (!isAudioMuted) speakText(`Not quite! ${explanation}`);
+      if (!isAudioMuted) speakText("Not quite, let's try again!", 'popup-incorrect.mp3');
     }
   };
 

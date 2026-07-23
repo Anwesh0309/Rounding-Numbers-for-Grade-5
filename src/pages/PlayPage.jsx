@@ -97,7 +97,7 @@ export default function PlayPage() {
         message: currentQuestion.explanation || "Great job!",
         xpGained: gainedXp
       });
-      if (!isAudioMuted) speakText(`Correct! ${currentQuestion.explanation || ''}`);
+      if (!isAudioMuted) speakText("That's Right!", 'popup-correct.mp3');
     } else {
       setFeedbackPopup({
         isCorrect: false,
@@ -105,7 +105,7 @@ export default function PlayPage() {
         message: currentQuestion.explanation || "Try another answer!",
         xpGained: 0
       });
-      if (!isAudioMuted) speakText(`Not quite! ${currentQuestion.explanation || ''}`);
+      if (!isAudioMuted) speakText("Not quite, let's try again!", 'popup-incorrect.mp3');
     }
   };
 
@@ -217,7 +217,7 @@ export default function PlayPage() {
                         : 'bg-white/5 text-white/30 cursor-not-allowed'
                     }`}
                   >
-                    {isUnlocked ? 'PLAY' : 'LOCKED'}
+                    {isUnlocked ? 'PRACTICE' : 'LOCKED'}
                   </button>
                 </div>
               );
