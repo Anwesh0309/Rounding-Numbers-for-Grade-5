@@ -64,7 +64,7 @@ export default function PlayPage() {
 
   useEffect(() => {
     if (!isAudioMuted && currentQuestion && !feedbackPopup && !sessionEnded && activeWorld) {
-      speakText(currentQuestion.question);
+      speakText(currentQuestion.question, `play-${currentQuestion.id}`);
     }
   }, [currentQIndex, isAudioMuted, activeWorld]);
 
@@ -346,7 +346,13 @@ export default function PlayPage() {
                 {/* High-Contrast Bold Hint Section */}
                 <div className="mt-2 flex flex-col items-center w-full">
                   <button
-                    onClick={() => setShowHint(!showHint)}
+                    onClick={() => {
+                      const nextState = !showHint;
+                      setShowHint(nextState);
+                      if (nextState && !isAudioMuted && currentQuestion) {
+                        speakText(`Hint: ${currentQuestion.explanation || 'Look at the decider digit right next door!'}`, `play-${currentQuestion.id}-hint`);
+                      }
+                    }}
                     className="px-4 py-1.5 rounded-2xl bg-amber-400 text-slate-950 hover:bg-amber-300 text-xs sm:text-sm font-black flex items-center gap-2 transition-all shadow-lg border border-amber-200 cursor-pointer active:scale-95"
                   >
                     <Sparkles className="w-4 h-4 fill-slate-950" />
